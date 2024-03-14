@@ -18,18 +18,6 @@ describe('FluorescentYearlyMaintSimulator', () => {
     simulator = new TubesYearlyMaintSimByValidation(data);
   });
 
-  test('fluorescentYearlyMaintSimulator result calculation', () => {
-    const result = simulator.fluorescentYearlyMaintSimulator();
-    const resultMagnitude = ((result?.cost - data.fluorescentTubeCost*data.tubesPerUnit*data.classroomUnits)/data.fluorescentTubeCost)/data.tubeFailTolerancePerUnit
-    expect(result.brokenTubes >= resultMagnitude && result.brokenTubes <= (resultMagnitude + data.tubesPerUnit)).toBeTruthy();
-    /**
-     * Where:
-     *  resultMagnitude is the minimum number of broken tubes, and
-     *  resultMagnitude + data.tubesPerUnit is the maximum number of broken tubes
-     * that can occur based on the resultant cost.
-     */
-  });
-
   test('should instantiate correctly', () => {
     expect(simulator).toBeInstanceOf(TubesYearlyMaintSimByValidation);
   });

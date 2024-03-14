@@ -23,10 +23,11 @@ const defineConstructorData = (): FluorescentYearlyMaintSimulatorInterface => ({
 
 const main = () => {
     const randRaundProvider = RandRaundProvider.getInstance();
+    const data = defineConstructorData();
     /**
      * Simulation By Validation
      */
-    const simulatorByValidation = new TubesYearlyMaintSimByValidation(defineConstructorData());
+    const simulatorByValidation = new TubesYearlyMaintSimByValidation(data);
     const simulationByValidationResults = simulatorByValidation.fluorescentYearlyMaintSimulator();
     console.log(`Sim By Validation: Fluorescent tubes broken in 1 year: ${ simulationByValidationResults.brokenTubes }`);
     console.log(`Sim By Validation: Fluorescent tubes cost to the University per year per classroom: ${ simulationByValidationResults.cost }`);
@@ -35,7 +36,7 @@ const main = () => {
     /**
      * Simulation By Decrement
      */
-    const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(defineConstructorData());
+    const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(data);
     const simulationByDecrementResults = simulatorByDecrement.fluorescentYearlyMaintSimulator();
     console.log(`Sim By Decrement: Fluorescent tubes broken in 1 year: ${ simulationByDecrementResults.brokenTubes }`);
     console.log(`Sim By Decrement: Fluorescent tubes cost to the University per year per classroom: ${ simulationByDecrementResults.cost }`);
@@ -44,12 +45,12 @@ const main = () => {
      * Prueba de comprobación de valores por tipo de simulación
      */
     /*randRaundProvider.resetRound();
-    for ( let i = 0; i < 100; i++) {
+    for ( let i = 0; i < 1000; i++) {
         randRaundProvider.resetRandRounds();
-        const simulatorByValidation = new TubesYearlyMaintSimByValidation(defineConstructorData());
+        const simulatorByValidation = new TubesYearlyMaintSimByValidation(data);
         const simulationByValidationResults = simulatorByValidation.fluorescentYearlyMaintSimulator();
         randRaundProvider.resetRound();
-        const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(defineConstructorData());
+        const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(data);
         const simulationByDecrementResults = simulatorByDecrement.fluorescentYearlyMaintSimulator();
         randRaundProvider.resetRound();
         console.log(`index ${ i }: brokenTubes: ${ simulationByValidationResults.brokenTubes != simulationByDecrementResults.brokenTubes ? `Different values V ${ simulationByValidationResults.brokenTubes } D ${ simulationByDecrementResults.brokenTubes }` : `Same values ${ simulationByDecrementResults.brokenTubes }`}`);
