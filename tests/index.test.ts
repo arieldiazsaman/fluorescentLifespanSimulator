@@ -1,7 +1,7 @@
-import FluorescentYearlyMaintSimulator from '../src/FluorescentYearlyMaintSimulator';
+import TubesYearlyMaintSimByValidation from '../src/TubesYearlyMaintSimByValidation';
 
 describe('FluorescentYearlyMaintSimulator', () => {
-  let simulator: FluorescentYearlyMaintSimulator;
+  let simulator: TubesYearlyMaintSimByValidation;
   let data = {
     classroomUnits: 4,
     tubesPerUnit: 4,
@@ -15,12 +15,12 @@ describe('FluorescentYearlyMaintSimulator', () => {
   };
 
   beforeEach(() => {
-    simulator = new FluorescentYearlyMaintSimulator(data);
+    simulator = new TubesYearlyMaintSimByValidation(data);
   });
 
   test('fluorescentYearlyMaintSimulator result calculation', () => {
     const result = simulator.fluorescentYearlyMaintSimulator();
-    const resultMagnitude = (result?.cost/data.fluorescentTubeCost)/data.tubeFailTolerancePerUnit
+    const resultMagnitude = ((result?.cost - data.fluorescentTubeCost*data.tubesPerUnit*data.classroomUnits)/data.fluorescentTubeCost)/data.tubeFailTolerancePerUnit
     expect(result.brokenTubes >= resultMagnitude && result.brokenTubes <= (resultMagnitude + data.tubesPerUnit)).toBeTruthy();
     /**
      * Where:
@@ -31,20 +31,13 @@ describe('FluorescentYearlyMaintSimulator', () => {
   });
 
   test('should instantiate correctly', () => {
-    expect(simulator).toBeInstanceOf(FluorescentYearlyMaintSimulator);
+    expect(simulator).toBeInstanceOf(TubesYearlyMaintSimByValidation);
   });
 
   test('should call spyUnitYearlyUsageSim function "classroomUnits" times', () => {
-    const spyUnitYearlyUsageSim = jest.spyOn(FluorescentYearlyMaintSimulator.prototype as any, 'unitYearlyUsageSim');
+    const spyUnitYearlyUsageSim = jest.spyOn(TubesYearlyMaintSimByValidation.prototype as any, 'unitYearlyUsageSim');
     simulator.fluorescentYearlyMaintSimulator();
 
     expect(spyUnitYearlyUsageSim).toHaveBeenCalledTimes(data.classroomUnits);
-  });
-
-  test('should call rand function', () => {
-    const spyRand = jest.spyOn(FluorescentYearlyMaintSimulator.prototype as any, 'rand').mockReturnValue(data.tubeWorkTimeMax);
-    simulator.fluorescentYearlyMaintSimulator();
-
-    expect(spyRand).toHaveBeenCalled();
   });
 });

@@ -1,5 +1,7 @@
-import FluorescentYearlyMaintSimulator from './FluorescentYearlyMaintSimulator';
+import TubesYearlyMaintSimByValidation from './TubesYearlyMaintSimByValidation';
 import { FluorescentYearlyMaintSimulatorInterface } from './Interfaces/FluorescentYearlyMaintSimulator';
+import TubesYearlyMaintSimByDecrement from './TubesYearlyMaintSimByDecrement';
+import RandRaundProvider from './RandRoundProvider';
 
 require('dotenv').config();
 
@@ -20,10 +22,39 @@ const defineConstructorData = (): FluorescentYearlyMaintSimulatorInterface => ({
 });
 
 const main = () => {
-    const simulator = new FluorescentYearlyMaintSimulator(defineConstructorData());
-    const simulationResults = simulator.fluorescentYearlyMaintSimulator()
-    console.log(`Fluorescent tubes broken in 1 year: ${ simulationResults.brokenTubes }`)
-    console.log(`Fluorescent tubes cost to the University per year per classroom: ${ simulationResults.cost }`)
+    const randRaundProvider = RandRaundProvider.getInstance();
+    /**
+     * Simulation By Validation
+     */
+    const simulatorByValidation = new TubesYearlyMaintSimByValidation(defineConstructorData());
+    const simulationByValidationResults = simulatorByValidation.fluorescentYearlyMaintSimulator();
+    console.log(`Sim By Validation: Fluorescent tubes broken in 1 year: ${ simulationByValidationResults.brokenTubes }`);
+    console.log(`Sim By Validation: Fluorescent tubes cost to the University per year per classroom: ${ simulationByValidationResults.cost }`);
+    randRaundProvider.resetRound(); // Reset the random rounds for the other simulation to get the same values
+
+    /**
+     * Simulation By Decrement
+     */
+    const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(defineConstructorData());
+    const simulationByDecrementResults = simulatorByDecrement.fluorescentYearlyMaintSimulator();
+    console.log(`Sim By Decrement: Fluorescent tubes broken in 1 year: ${ simulationByDecrementResults.brokenTubes }`);
+    console.log(`Sim By Decrement: Fluorescent tubes cost to the University per year per classroom: ${ simulationByDecrementResults.cost }`);
+
+    /**
+     * Prueba de comprobación de valores por tipo de simulación
+     */
+    /*randRaundProvider.resetRound();
+    for ( let i = 0; i < 100; i++) {
+        randRaundProvider.resetRandRounds();
+        const simulatorByValidation = new TubesYearlyMaintSimByValidation(defineConstructorData());
+        const simulationByValidationResults = simulatorByValidation.fluorescentYearlyMaintSimulator();
+        randRaundProvider.resetRound();
+        const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(defineConstructorData());
+        const simulationByDecrementResults = simulatorByDecrement.fluorescentYearlyMaintSimulator();
+        randRaundProvider.resetRound();
+        console.log(`index ${ i }: brokenTubes: ${ simulationByValidationResults.brokenTubes != simulationByDecrementResults.brokenTubes ? `Different values V ${ simulationByValidationResults.brokenTubes } D ${ simulationByDecrementResults.brokenTubes }` : `Same values ${ simulationByDecrementResults.brokenTubes }`}`);
+        console.log(`index ${ i }: ______costs: ${ simulationByValidationResults.cost != simulationByDecrementResults.cost ? `Different values V ${ simulationByValidationResults.cost } D ${ simulationByDecrementResults.cost }` : `Same values ${ simulationByDecrementResults.cost }`}`);
+    };*/
 }
 
 main();
