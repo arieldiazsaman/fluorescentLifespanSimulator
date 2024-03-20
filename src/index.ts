@@ -2,6 +2,7 @@ import TubesYearlyMaintSimByValidation from './TubesYearlyMaintSimByValidation';
 import { FluorescentYearlyMaintSimulatorInterface } from './Interfaces/FluorescentYearlyMaintSimulator';
 import TubesYearlyMaintSimByDecrement from './TubesYearlyMaintSimByDecrement';
 import RandRaundProvider from './RandRoundProvider';
+import TubesYearlyMaintSim from './TubesYearlyMaintSim';
 
 require('dotenv').config();
 
@@ -47,14 +48,14 @@ const main = () => {
     /*randRaundProvider.resetRound();
     for ( let i = 0; i < 1000; i++) {
         randRaundProvider.resetRandRounds();
-        const simulatorByValidation = new TubesYearlyMaintSimByValidation(data);
-        const simulationByValidationResults = simulatorByValidation.fluorescentYearlyMaintSimulator();
+        const simulator = new TubesYearlyMaintSim(data);
+        const simulationResults = simulator.fluorescentYearlyMaintSimulator();
         randRaundProvider.resetRound();
         const simulatorByDecrement = new TubesYearlyMaintSimByDecrement(data);
         const simulationByDecrementResults = simulatorByDecrement.fluorescentYearlyMaintSimulator();
         randRaundProvider.resetRound();
-        console.log(`index ${ i }: brokenTubes: ${ simulationByValidationResults.brokenTubes != simulationByDecrementResults.brokenTubes ? `Different values V ${ simulationByValidationResults.brokenTubes } D ${ simulationByDecrementResults.brokenTubes }` : `Same values ${ simulationByDecrementResults.brokenTubes }`}`);
-        console.log(`index ${ i }: ______costs: ${ simulationByValidationResults.cost != simulationByDecrementResults.cost ? `Different values V ${ simulationByValidationResults.cost } D ${ simulationByDecrementResults.cost }` : `Same values ${ simulationByDecrementResults.cost }`}`);
+        console.log(`index ${ i }: brokenTubes: ${ simulationResults.brokenTubes != simulationByDecrementResults.brokenTubes ? `Different values N ${ simulationResults.brokenTubes } D ${ simulationByDecrementResults.brokenTubes }` : `Same values ${ simulationByDecrementResults.brokenTubes }`}`);
+        console.log(`index ${ i }: ______costs: ${ simulationResults.cost != simulationByDecrementResults.cost ? `Different values N ${ simulationResults.cost } D ${ simulationByDecrementResults.cost }` : `Same values ${ simulationByDecrementResults.cost }`}`);
     };*/
 }
 

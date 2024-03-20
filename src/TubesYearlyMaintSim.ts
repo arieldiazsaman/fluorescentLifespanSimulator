@@ -1,7 +1,7 @@
 import { FluorescentYearlyMaintSimulatorInterface } from "./Interfaces/FluorescentYearlyMaintSimulator"
 import RandRaundProvider from "./RandRoundProvider"
 
-export default class TubesYearlyMaintSimByValidation {
+export default class TubesYearlyMaintSim {
     private classroomUnits: number = 4; // fluorescent tube units
     private tubesPerUnit: number = 4; // fluorescent tubes per unit
     private classroomDailyUsage: number = 15; // hours a day
@@ -24,57 +24,6 @@ export default class TubesYearlyMaintSimByValidation {
         if (data?.tubeFailTolerancePerUnit) this.tubeFailTolerancePerUnit = data.tubeFailTolerancePerUnit;
         if (data?.fluorescentTubeCost) this.fluorescentTubeCost = data.fluorescentTubeCost;
     }
-
-    private unitYearlyUsageSim({
-        classroomYearlyUsage = 0,
-    }): { 
-        brokenTubes: number, // fluorescent tubes broken in 1 year per unit
-        cost: number, // cost of fluorescent tubes per year per classroom per unit
-    } {
-        const tubeDurations: number[] = [];
-        let hoursPassed = this.tubeWorkTimeMin;
-        let failedTubes = 0;
-        let baseTime = 0; // After all tubes from an unit are replaced, a new baseTime is defined
-        let brokenTubes = 0; // Number of broken tubes, not including unbroken tubes that have been changed after the broken tubes limit has been reached in one unit
-        let cost = this.fluorescentTubeCost*this.tubesPerUnit; // Takes in account the fluorescent tubes bought before the simulation started
-
-        for ( let i = 0; i < this.tubesPerUnit; i++ ) {
-            tubeDurations.push(
-                this.randRaundProvider.getRand(
-                    this.tubeWorkTimeMin,
-                    this.tubeWorkTimeMax,
-                    'primary',
-                )
-            );
-        };
-
-        while (hoursPassed <= classroomYearlyUsage) {
-            for ( let i = 0; i < this.tubesPerUnit; i++ ) {
-                if ( tubeDurations[i] !== -1 && (baseTime + tubeDurations[i]) <= hoursPassed ) {
-                    tubeDurations[i] = -1
-                    failedTubes++;
-                    brokenTubes++;
-                };
-            };
-            if ( failedTubes >= this.tubeFailTolerancePerUnit ) {
-                cost = cost + this.fluorescentTubeCost*this.tubesPerUnit;
-                for ( let i = 0; i < this.tubesPerUnit; i++ ) {
-                    tubeDurations[i] = this.randRaundProvider.getRand(
-                        this.tubeWorkTimeMin,
-                        this.tubeWorkTimeMax,
-                        undefined,
-                    );
-                };
-                baseTime = hoursPassed;
-                failedTubes = 0;
-            };
-            hoursPassed++;
-        };
-        return {
-            brokenTubes,
-            cost,
-        };
-    };
     
     fluorescentYearlyMaintSimulator(): { 
         brokenTubes: number, // fluorescent tubes broken in 1 year
@@ -89,12 +38,54 @@ export default class TubesYearlyMaintSimByValidation {
             brokenTubes: number,
             cost: number,
         }[] = [];
-    
-        for ( let unit = 0; unit < this.classroomUnits; unit++) {
-            unitYearlyUsage.push(
-                this.unitYearlyUsageSim({ classroomYearlyUsage })
-            );
+
+        const tubeDurations: number[] = [];
+        const indexBasedFailedTubes: number[] = [];
+        let hoursPassed = 1;
+        let brokenTubes = 0; // Number of broken tubes, not including unbroken tubes that have been changed after the broken tubes limit has been reached in one unit
+        let cost = this.fluorescentTubeCost*this.tubesPerUnit; // Takes in account the fluorescent tubes bought before the simulation started
+
+        for ( let unit = 0; unit < this.classroomUnits; unit++ ) {
+            for ( let tube = 0; tube < this.tubesPerUnit; tube++ ) {
+                tubeDurations.push(
+                    this.randRaundProvider.getRand(
+                        this.tubeWorkTimeMin,
+                        this.tubeWorkTimeMax,
+                        'primary',
+                    )
+                );
+            };
+            indexBasedFailedTubes.push(0);
         };
+
+        while (hoursPassed <= classroomYearlyUsage) {
+            for ( let i = 0; i < this.tubesPerUnit * this.classroomUnits; i++ ) {
+                tubeDurations[i] = tubeDurations[i] - 1;
+                if (tubeDurations[i] === 0) {
+                    tubeDurations[i] = -1;
+                    indexBasedFailedTubes[Math.floor(i/this.tubesPerUnit)] = indexBasedFailedTubes[Math.floor(i/this.tubesPerUnit)] + 1;
+                    brokenTubes++;
+                };
+            };
+            for (let i = 0; i < indexBasedFailedTubes.length; i++) {
+                if ( indexBasedFailedTubes[i] >= this.tubeFailTolerancePerUnit ) {
+                    cost = cost + this.fluorescentTubeCost*this.tubesPerUnit;
+                    for ( let j = i*this.classroomUnits; j < i*this.classroomUnits + this.tubesPerUnit ; j++ ) {
+                        tubeDurations[i] = this.randRaundProvider.getRand(
+                            this.tubeWorkTimeMin,
+                            this.tubeWorkTimeMax,
+                            undefined,
+                        );
+                    };
+                    indexBasedFailedTubes[i] = 0;
+                };
+            };
+            hoursPassed++;
+        };
+        unitYearlyUsage.push({
+            brokenTubes,
+            cost,
+        });
 
         return unitYearlyUsage.reduce(
             (

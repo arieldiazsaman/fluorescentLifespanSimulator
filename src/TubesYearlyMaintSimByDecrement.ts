@@ -42,6 +42,7 @@ export default class TubesYearlyMaintSimByDecrement {
                 this.randRaundProvider.getRand(
                     this.tubeWorkTimeMin,
                     this.tubeWorkTimeMax,
+                    'primary',
                 )
             );
         };
@@ -61,6 +62,7 @@ export default class TubesYearlyMaintSimByDecrement {
                     tubeDurations[i] = this.randRaundProvider.getRand(
                         this.tubeWorkTimeMin,
                         this.tubeWorkTimeMax,
+                        undefined,
                     );
                 };
                 failedTubes = 0;
